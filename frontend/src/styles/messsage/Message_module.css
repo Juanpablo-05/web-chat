@@ -1,0 +1,42 @@
+.container_opcion {
+  width: 80px;
+  height: 80px;
+  position: absolute;
+  top: 20%;
+  right: -50px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  animation: slideIn 0.3s ease-in-out;
+  background: #fff;
+  border-radius: 4px;
+
+
+  button{
+    width: 100%;
+    padding: 5px;
+    font-size: 18px;
+    border: none;
+    border-radius:4px;
+    cursor: pointer;
+    background: transparent;
+    transition: .3s ease;
+
+    &:hover{
+      background: #eee;
+      transition: .3s ease;
+    }
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
