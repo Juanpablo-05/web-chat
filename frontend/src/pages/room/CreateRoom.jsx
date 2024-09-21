@@ -41,7 +41,7 @@ function CreateRoom() {
       } else {
         Swal.fire({
           title: "Error al crear la sala",
-          text: "Por favor, intente nuevamente.",
+          text: "Por favor, intente nuevamente y rellene todos los campos...",
           icon: "error",
           confirmButtonText: "Ok",
         });

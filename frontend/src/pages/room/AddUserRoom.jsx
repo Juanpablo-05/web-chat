@@ -2,6 +2,8 @@ import React, { useContext, useState, useEffect } from "react";
 import "../../styles/room/AddUserRoom_module.css";
 import { ApiContext } from "../../context/apiContext";
 
+import { useTransition, animated, useSpring } from "react-spring";
+
 function AddUserRoom() {
   const [userName, setUserName] = useState("");
   const [userList, setUserList] = useState([]);
@@ -10,44 +12,36 @@ function AddUserRoom() {
 
   const { roomId } = useContext(ApiContext);
 
+  console.log(userList)
+
   const fechtUsers = async () => {
     try {
       const response = await fetch("http://localhost:3001/user/");
       const data = await response.json();
-
       setUserData(data);
     } catch (error) {
-      console.error("error al hacer el feching: " + error)
+      console.error("error al hacer el feching: " + error);
     }
   };
 
   const filter = (input) => {
-    const filtered = userData.filter((user) => 
+    const filtered = userData.filter((user) =>
       user.Usu_NomUsuario.toLowerCase().includes(input.toLowerCase())
     );
     if (filtered.length > 0) {
-      setDataFilter(filtered)
-      console.log( "usuarios filtrados: " + JSON.stringify(dataFilter));
+      setDataFilter(filtered);
     } else {
-      setDataFilter([{
-        message: "no se encontro ningun usuraio con este nombre..."
-      }]);
-       
+      setDataFilter([
+        {
+          message: "no se encontró ningún usuario con este nombre...",
+        },
+      ]);
     }
+  };
 
-    
-  }
-
-  const handleFilter = (e)=>{
-    filter(e.target.value)
-    console.log(dataFilter)
-  }
-
-  const handleAddUserList = () => {
-    if (userName.trim()) {
-      setUserList([...userList, userName]);
-      setUserName("");
-    }
+  const handleFilter = (e) => {
+    setUserName(e.target.value);
+    filter(e.target.value);
   };
 
   const handleRemoveUser = (index) => {
@@ -55,66 +49,78 @@ function AddUserRoom() {
     setUserList(newList);
   };
 
-  const handleAddUser = async () => {
-    const response = await fetch("http://localhost:3001/salaUser/create", {
-      method: "POST",
-      body: JSON.stringify({
-        roomId: roomId,
-        users: userList,
-      }),
-    });
-
-    const data = await response.json();
-    if (response.ok) {
-      setNewRoom({
-        roomId: "",
-        users: [],
-      });
+  const handleAddUser = (user) => {
+    if (!userList.some((u) => u.Usu_NomUsuario === user.Usu_NomUsuario)) {
+      setUserList([...userList, user]); 
     }
   };
 
-  useEffect(()=>{
-    fechtUsers()
-  }, [])
+  useEffect(() => {
+    fechtUsers();
+  }, []);
+
+  const transitions = useTransition(dataFilter, {
+    from: { opacity: 0, transform: "translateY(-20px)" },
+    enter: { opacity: 1, transform: "translateY(0)" },
+    leave: { opacity: 0, transform: "translateY(-20px)" },
+    keys: (user) => user.Usu_NomUsuario,
+  });
 
   return (
     <section className="container">
-      <div className="container_title">
-        <h2>Agregar Usuarios</h2>
-        <p>Por favor agregue los usuarios que estaran en su grupo</p>
-      </div>
+      <section className="container_filter">
+        <div className="container_title">
+          <h2>Agregar Usuarios</h2>
+          <p>Por favor agregue los usuarios que estarán en su grupo</p>
+        </div>
 
-      <div className="container_grup">
-        <input
-          type="text"
-          onChange={handleFilter}
-          placeholder="Nombre del usuario"
-        />
-        {/* <button onClick={handleAddUserList}>Agregar</button> */}
-      </div>
+        <div className="container_grup">
+          <input
+            type="text"
+            value={userName}
+            onChange={handleFilter}
+            placeholder="Nombre del usuario"
+          />
+        </div>
 
-      {/* <div className="container_user_list">
+        {userName.length > 0 ? (
+          <animated.div className="container_list">
+            <ul>
+              {transitions((style, user) => (
+                <animated.li style={style}>
+                  {user.Usu_NomUsuario ? (
+                    <>
+                      {user.Usu_NomUsuario}
+                      <button onClick={() => handleAddUser(user)}>
+                        añadir
+                      </button>
+                    </>
+                  ) : (
+                    user.message
+                  )}
+                </animated.li>
+              ))}
+            </ul>
+          </animated.div>
+        ) : null}
+      </section>
+
+      <section className="container_list_section">
         <ul>
-          {userList.map((user, index) => (
-            <li key={index}>
-              {user}
-              <button onClick={() => handleRemoveUser(index)}>Quitar</button>
+          {userList.length > 0 ? (
+            userList.map((user, index) => (
+              <li key={index}>
+                {user.Usu_NomUsuario}
+                <button onClick={() => handleRemoveUser(index)}>Quitar</button>
+              </li>
+            ))
+          ) : (
+            <li>
+              <p>Sin usuarios seleccionados...</p>
             </li>
-          ))}
+          )}
         </ul>
-      </div> */}
-
-      {/* <div className="container_btn">
-        {userList.length > 0 ? (
-          <button onClick={handleAddUser} className="btn active">
-            Añadir
-          </button>
-        ) : (
-          <button onClick={handleAddUser} className="btn">
-            Añadir
-          </button>
-        )}
-      </div> */}
+      </section>
     </section>
   );
 }
