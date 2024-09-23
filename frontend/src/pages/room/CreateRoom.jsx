@@ -8,7 +8,7 @@ function CreateRoom() {
   const [roomName, setRoomName] = useState("");
   const [roomImage, setRoomImage] = useState(null);
   const navigate = useNavigate();
-  const { user, setRoomId } = useContext(ApiContext);
+  const { user, setRoomId, roomId } = useContext(ApiContext);
 
   const handleCreateRoom = async (e) => {
     e.preventDefault();
@@ -54,7 +54,11 @@ function CreateRoom() {
         confirmButtonText: "Ok",
       });
     }
+
+    console.log("sala creada: ", roomId)
   };
+
+ 
 
   return (
     <section className="container-create-room">

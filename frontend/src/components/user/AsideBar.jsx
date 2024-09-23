@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import ButtonNewRoom from "../room/ButtonNewRoom";
 
 function AsideBar() {
-  const { roomUser } = useContext(ApiContext);
+  const { roomUser, roomId } = useContext(ApiContext);
   const [imagesProfile, setImagesProfile] = useState({}); 
 
   const fetchImage = async (id) => {
